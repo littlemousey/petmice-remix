@@ -11,7 +11,7 @@ interface UseRedditPostsResult {
 
 export function useRedditPosts(
   subreddit: string = "PetMice",
-  timeFilter: "week" | "all" = "week"
+  timeFilter: "week" | "all" | "rainbow" = "week"
 ): UseRedditPostsResult {
   const [posts, setPosts] = useState<RedditPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,27 +22,47 @@ export function useRedditPosts(
   const fetchPosts = useCallback(
     async (afterParam: string | null = null) => {
       try {
-        const url = afterParam
-          ? `https://www.reddit.com/r/${subreddit}/top.json?limit=25&t=${timeFilter}&after=${afterParam}&raw_json=1`
-          : `https://www.reddit.com/r/${subreddit}/top.json?limit=25&t=${timeFilter}&raw_json=1`;
-
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        const response = await fetch(url, { signal: controller.signal });
+        // Build URL based on view type
+        const buildUrl = (): string => {
+          const baseParams = new URLSearchParams({ raw_json: "1" });
+
+          if (timeFilter === "rainbow") {
+            // Use search API with flair filter
+            baseParams.set("q", 'flair:"Rainbow Bridge"');
+            baseParams.set("restrict_sr", "1");
+            baseParams.set("sort", "new");
+            baseParams.set("limit", "100");
+            if (afterParam) baseParams.set("after", afterParam);
+            return `https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`;
+          } else {
+            // Use top posts API
+            const limit = timeFilter === "all" ? "25" : "100";
+            baseParams.set("limit", limit);
+            baseParams.set("t", timeFilter);
+            if (afterParam) baseParams.set("after", afterParam);
+            return `https://www.reddit.com/r/${subreddit}/top.json?${baseParams}`;
+          }
+        };
+
+        const response = await fetch(buildUrl(), { signal: controller.signal });
         clearTimeout(timeoutId);
 
-        if (response.ok === false) {
+        if (!response.ok) {
           throw new Error(`HTTP error status: ${response.status}`);
         }
 
         const data = await response.json();
 
-        if (data.data?.children === undefined) {
+        if (!data.data?.children) {
           throw new Error("Invalid response format");
         }
 
-        const newPosts = data.data.children.map((child: any) => child.data);
+        const newPosts: RedditPost[] = data.data.children.map(
+          (child: any) => child.data
+        );
 
         setPosts((prev) => (afterParam ? [...prev, ...newPosts] : newPosts));
         setAfter(data.data.after);

@@ -12,7 +12,7 @@ import christmasMusic from "./assets/christmas-is-christmas-loop.mp3";
 
 function App() {
   const [theme, setTheme] = useState("default");
-  const [view, setView] = useState<"week" | "all">("week");
+  const [view, setView] = useState<"week" | "all" | "rainbow">("week");
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -26,6 +26,16 @@ function App() {
     setTheme(savedTheme);
     document.body.setAttribute("data-theme", savedTheme);
   }, []);
+
+  useEffect(() => {
+    // Override theme when in rainbow bridge view
+    if (view === "rainbow") {
+      document.body.setAttribute("data-theme", "rainbow-bridge");
+    } else {
+      const savedTheme = localStorage.getItem("theme") || "default";
+      document.body.setAttribute("data-theme", savedTheme);
+    }
+  }, [view]);
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -60,8 +70,8 @@ function App() {
 
   return (
     <>
-      {theme === "christmas" && <Snowfall />}
-      {theme === "christmas" && (
+      {theme === "christmas" && view !== "rainbow" && <Snowfall />}
+      {theme === "christmas" && view !== "rainbow" && (
         <>
           <audio ref={audioRef} loop>
             <source src={christmasMusic} type="audio/mpeg" />
@@ -87,29 +97,39 @@ function App() {
           </button>
         </>
       )}
-      <ThemeSwitcher theme={theme} onThemeChange={handleThemeChange} />
+      {view !== "rainbow" && (
+        <ThemeSwitcher theme={theme} onThemeChange={handleThemeChange} />
+      )}
 
       <h1>🐁 Gallery of Cute Mice 🐁</h1>
 
       <ViewToggle currentView={view} onViewChange={setView} />
 
-      <GalleryGrid posts={posts} showRanking={view === "all"} />
+      <GalleryGrid
+        posts={posts}
+        showRanking={view === "all"}
+        isRainbowBridge={view === "rainbow"}
+      />
 
-      {hasMore && view === "week" && (
+      {hasMore && (view === "week" || view === "rainbow") && (
         <div style={{ textAlign: "center", margin: "40px 0" }}>
           <button
             onClick={loadMore}
             style={{
               padding: "12px 24px",
               fontSize: "16px",
-              background: "rgba(255, 255, 255, 0.9)",
+              background:
+                view === "rainbow"
+                  ? "rgba(255, 255, 255, 0.2)"
+                  : "rgba(255, 255, 255, 0.9)",
               border: "2px solid white",
               borderRadius: "8px",
               cursor: "pointer",
               fontWeight: "bold",
+              color: view === "rainbow" ? "white" : "inherit",
             }}
           >
-            Load More Mice 🐭
+            {view === "rainbow" ? "Load More 🕯️" : "Load More Mice 🐭"}
           </button>
         </div>
       )}

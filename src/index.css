@@ -42,6 +42,11 @@ body[data-theme="christmas"] {
   animation: gradientShift 8s ease infinite;
 }
 
+/* Rainbow Bridge memorial theme */
+body[data-theme="rainbow-bridge"] {
+  background: #000000;
+}
+
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -81,7 +86,24 @@ h1 {
 }
 
 .loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   text-align: center;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loading-container img {
+  border: 4px solid white;
+  margin-bottom: 20px;
+}
+
+.loading-container p {
+  margin: 10px 0;
+  font-size: 1.2em;
 }
 
 .mouse-grid {
@@ -226,4 +248,23 @@ figcaption {
   border-top: 2px solid #d4af37;
   padding: 8px 5px !important;
   margin-top: 15px !important;
+}
+
+/* Rainbow Bridge memorial theme - override all theme styles */
+[data-theme="rainbow-bridge"] h1 {
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="rainbow-bridge"] figure {
+  background: #000000 !important;
+  border: 2px solid #444444 !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="rainbow-bridge"] figcaption {
+  color: #ffffff !important;
+  background: none !important;
+  text-shadow: none !important;
+  border-top: none !important;
 }

@@ -5,6 +5,7 @@ export interface RedditPost {
   post_hint?: string;
   is_gallery?: boolean;
   thumbnail?: string;
+  link_flair_text?: string;
   preview?: {
     images: Array<{
       source: { url: string; width: number; height: number };

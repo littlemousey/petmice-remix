@@ -1,6 +1,6 @@
 interface ViewToggleProps {
-  currentView: "week" | "all";
-  onViewChange: (view: "week" | "all") => void;
+  currentView: "week" | "all" | "rainbow";
+  onViewChange: (view: "week" | "all" | "rainbow") => void;
 }
 
 export default function ViewToggle({
@@ -40,7 +40,7 @@ export default function ViewToggle({
             transition: "all 0.2s",
           }}
         >
-          🗓️ Latest mice
+          🗓️ Most recent
         </button>
         <button
           onClick={() => onViewChange("all")}
@@ -59,6 +59,24 @@ export default function ViewToggle({
           }}
         >
           🏆 All Time Top 25
+        </button>
+        <button
+          onClick={() => onViewChange("rainbow")}
+          style={{
+            padding: "8px 20px",
+            fontSize: "16px",
+            background:
+              currentView === "rainbow"
+                ? "rgba(100, 100, 100, 0.2)"
+                : "transparent",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: currentView === "rainbow" ? "bold" : "normal",
+            transition: "all 0.2s",
+          }}
+        >
+          🕯️ Rainbow Bridge
         </button>
       </div>
     </div>

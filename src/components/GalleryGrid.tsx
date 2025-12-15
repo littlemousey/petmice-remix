@@ -5,11 +5,13 @@ import { getMediaInfo } from "../utils/reddit";
 interface GalleryGridProps {
   posts: RedditPost[];
   showRanking?: boolean;
+  isRainbowBridge?: boolean;
 }
 
 export default function GalleryGrid({
   posts,
   showRanking = false,
+  isRainbowBridge = false,
 }: GalleryGridProps) {
   const postsWithMedia = posts.filter((post) => getMediaInfo(post).mediaUrl);
 
@@ -25,6 +27,7 @@ export default function GalleryGrid({
             mediaType={mediaType}
             title={post.title}
             ranking={showRanking ? index + 1 : undefined}
+            isRainbowBridge={isRainbowBridge}
             onError={() => {
               // Remove the figure element on image load error
               const element = document.querySelector(
