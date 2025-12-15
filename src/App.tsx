@@ -7,6 +7,7 @@ import ErrorView from "./components/ErrorView";
 import GalleryGrid from "./components/GalleryGrid";
 import { useRedditPosts } from "./hooks/useRedditPosts";
 import Snowfall from "./components/Snowfall";
+import Footer from "./components/Footer";
 import christmasMusic from "./assets/christmas-is-christmas-loop.mp3";
 
 function App() {
@@ -112,6 +113,8 @@ function App() {
           </button>
         </div>
       )}
+
+      <Footer />
     </>
   );
 }

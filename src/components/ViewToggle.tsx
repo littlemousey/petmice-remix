@@ -40,7 +40,7 @@ export default function ViewToggle({
             transition: "all 0.2s",
           }}
         >
-          🗓️ This Week
+          🗓️ Latest mice
         </button>
         <button
           onClick={() => onViewChange("all")}
