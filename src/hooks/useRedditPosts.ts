@@ -36,14 +36,14 @@ export function useRedditPosts(
             baseParams.set("sort", "new");
             baseParams.set("limit", "100");
             if (afterParam) baseParams.set("after", afterParam);
-            return `https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`;
+            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`)}`;
           } else {
             // Use top posts API
             const limit = timeFilter === "all" ? "25" : "100";
             baseParams.set("limit", limit);
             baseParams.set("t", timeFilter);
             if (afterParam) baseParams.set("after", afterParam);
-            return `https://www.reddit.com/r/${subreddit}/top.json?${baseParams}`;
+            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/top.json?${baseParams}`)}`;
           }
         };
 
