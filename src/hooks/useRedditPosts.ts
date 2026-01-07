@@ -60,8 +60,12 @@ export function useRedditPosts(
           throw new Error("Invalid response format");
         }
 
+        interface RedditChild {
+          data: RedditPost;
+          kind: string;
+        }
         const newPosts: RedditPost[] = data.data.children.map(
-          (child: any) => child.data
+          (child: RedditChild) => child.data
         );
 
         setPosts((prev) => (afterParam ? [...prev, ...newPosts] : newPosts));
