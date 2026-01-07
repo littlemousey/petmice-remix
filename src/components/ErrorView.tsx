@@ -8,18 +8,21 @@ export default function ErrorView({ error }: ErrorViewProps) {
       <h2>Oops! Something went wrong</h2>
       <p>{error}</p>
       <p>Please check your connection and try again.</p>
+      <br />
       <p>In the meantime, please enjoy this poem:</p>
+      <br />
       <article>
         <h3>
-          To a Mouse, on Turning Her Up in Her Nest With the Plough, November,
-          1785
+          To a Mouse, on Turning Her Up in Her Nest With the Plough
+          <br />
+          November, 1785
         </h3>
         <p
           style={{
             fontStyle: "italic",
             maxWidth: "600px",
             margin: "20px auto",
-            textAlign: "left",
+            textAlign: "center",
             lineHeight: "1.6",
           }}
         >
