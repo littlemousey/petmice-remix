@@ -12,7 +12,9 @@ import christmasMusic from "./assets/christmas-is-christmas-loop.mp3";
 
 function App() {
   const [theme, setTheme] = useState("default");
-  const [view, setView] = useState<"week" | "all" | "rainbow">("week");
+  const [view, setView] = useState<
+    "week" | "all" | "rainbow" | "hot" | "cute-mouse-media"
+  >("week");
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -111,7 +113,7 @@ function App() {
         isRainbowBridge={view === "rainbow"}
       />
 
-      {hasMore && (view === "week" || view === "rainbow") && (
+      {hasMore && view !== "all" && (
         <div style={{ textAlign: "center", margin: "40px 0" }}>
           <button
             onClick={loadMore}

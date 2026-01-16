@@ -11,7 +11,7 @@ interface UseRedditPostsResult {
 
 export function useRedditPosts(
   subreddit: string = "PetMice",
-  timeFilter: "week" | "all" | "rainbow" = "week"
+  timeFilter: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media" = "week"
 ): UseRedditPostsResult {
   const [posts, setPosts] = useState<RedditPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,10 +37,28 @@ export function useRedditPosts(
             baseParams.set("limit", "100");
             if (afterParam) baseParams.set("after", afterParam);
             return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`)}`;
+          } else if (timeFilter === "cute-mouse-media") {
+            // Use search API with Cute Mouse Media flair filter
+            baseParams.set("q", 'flair:"Cute Mouse Media"');
+            baseParams.set("restrict_sr", "1");
+            baseParams.set("sort", "new");
+            baseParams.set("limit", "100");
+            if (afterParam) baseParams.set("after", afterParam);
+            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`)}`;
+          } else if (timeFilter === "hot") {
+            // Use hot posts API
+            baseParams.set("limit", "100");
+            if (afterParam) baseParams.set("after", afterParam);
+            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/hot.json?${baseParams}`)}`;
+          }
+          if (timeFilter === "week") {
+            baseParams.set("limit", "100");
+            // Use /new.json to get latest posts
+            if (afterParam) baseParams.set("after", afterParam);
+            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/new.json?${baseParams}`)}`;
           } else {
-            // Use top posts API
-            const limit = timeFilter === "all" ? "25" : "100";
-            baseParams.set("limit", limit);
+            // timeFilter === "all" - get top 25 posts
+            baseParams.set("limit", "25");
             baseParams.set("t", timeFilter);
             if (afterParam) baseParams.set("after", afterParam);
             return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/top.json?${baseParams}`)}`;

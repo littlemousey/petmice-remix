@@ -1,6 +1,8 @@
 interface ViewToggleProps {
-  currentView: "week" | "all" | "rainbow";
-  onViewChange: (view: "week" | "all" | "rainbow") => void;
+  currentView: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media";
+  onViewChange: (
+    view: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media"
+  ) => void;
 }
 
 export default function ViewToggle({
@@ -77,6 +79,42 @@ export default function ViewToggle({
           }}
         >
           🕯️ Rainbow Bridge
+        </button>
+        <button
+          onClick={() => onViewChange("hot")}
+          style={{
+            padding: "8px 20px",
+            fontSize: "16px",
+            background:
+              currentView === "hot"
+                ? "rgba(100, 100, 100, 0.2)"
+                : "transparent",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: currentView === "hot" ? "bold" : "normal",
+            transition: "all 0.2s",
+          }}
+        >
+          🔥 Hot
+        </button>
+        <button
+          onClick={() => onViewChange("cute-mouse-media")}
+          style={{
+            padding: "8px 20px",
+            fontSize: "16px",
+            background:
+              currentView === "cute-mouse-media"
+                ? "rgba(100, 100, 100, 0.2)"
+                : "transparent",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: currentView === "cute-mouse-media" ? "bold" : "normal",
+            transition: "all 0.2s",
+          }}
+        >
+          🐭 Cute Mouse Media
         </button>
       </div>
     </div>
