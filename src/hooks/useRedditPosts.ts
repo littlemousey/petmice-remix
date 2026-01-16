@@ -88,7 +88,15 @@ export function useRedditPosts(
 
         setPosts((prev) => (afterParam ? [...prev, ...newPosts] : newPosts));
         setAfter(data.data.after);
-        setHasMore(data.data.after !== null);
+
+        // Show "Load More" if we got an after token
+        // OR if we received a full page of results (25+ posts suggests more might exist)
+        if (newPosts.length === 0 && afterParam !== null) {
+          // Empty response on pagination attempt - no more posts
+          setHasMore(false);
+        } else {
+          setHasMore(data.data.after !== null || newPosts.length >= 25);
+        }
         setLoading(false);
       } catch (err) {
         console.error("Fetch error:", err);
