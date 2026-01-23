@@ -3,6 +3,7 @@ import type { RedditPost } from "../types/reddit";
 export function getMediaInfo(entry: RedditPost): {
   mediaUrl: string | null;
   mediaType: "image" | "video";
+  upvotes: string;
 } {
   let mediaUrl: string | null = null;
   let mediaType: "image" | "video" = "image";
@@ -50,5 +51,5 @@ export function getMediaInfo(entry: RedditPost): {
     mediaType = "image";
   }
 
-  return { mediaUrl, mediaType };
+  return { mediaUrl, mediaType, upvotes: entry.ups };
 }

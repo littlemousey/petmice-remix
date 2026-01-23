@@ -4,6 +4,8 @@ interface MediaCardProps {
   title: string;
   ranking?: number;
   isRainbowBridge?: boolean;
+  filter: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media";
+  upVotes: string;
   onError: () => void;
 }
 
@@ -13,6 +15,8 @@ export default function MediaCard({
   title,
   ranking,
   isRainbowBridge = false,
+  filter = "week",
+  upVotes,
   onError,
 }: MediaCardProps) {
   return (
@@ -55,6 +59,7 @@ export default function MediaCard({
       <figcaption style={isRainbowBridge ? { color: "#fff" } : {}}>
         {title}
       </figcaption>
+      {filter === "all" && <div className="upvotes-tag">⬆️ {upVotes}</div>}
     </figure>
   );
 }

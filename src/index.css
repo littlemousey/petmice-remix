@@ -226,6 +226,13 @@ figcaption {
   border: 2px solid #fff;
 }
 
+.upvotes-tag {
+  padding: 5px 10px;
+  background-color: lightblue;
+  color: white;
+  border-radius: 5px;
+}
+
 /* Christmas theme for cards */
 [data-theme="christmas"] figure {
   background: linear-gradient(135deg, #8b0000 0%, #b22222 100%) !important;

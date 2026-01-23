@@ -111,6 +111,7 @@ function App() {
         posts={posts}
         showRanking={view === "all"}
         isRainbowBridge={view === "rainbow"}
+        filter={view}
       />
 
       {hasMore && view !== "all" && (
