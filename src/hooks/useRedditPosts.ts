@@ -64,7 +64,7 @@ export function useRedditPosts(
           endpoint = `https://www.reddit.com/r/${subreddit}/new.json?${baseParams}`;
       }
 
-      return `https://corsproxy.io/?${encodeURIComponent(endpoint)}`;
+      return `https://cors-anywhere.com/${endpoint}`;
     },
     [subreddit, timeFilter]
   );
