@@ -1,6 +1,8 @@
 # 🐭 Pet Mice Gallery - React + Vite + TypeScript
 
-A gallery displaying the lovely mice from the `r/PetMice` subreddit
+A gallery displaying the lovely mice from the `r/PetMice` subreddit.
+You can find the deployed version on Github [here](https://littlemousey.github.io/petmice-remix/)
+The original/initial version built with basic HTML, JavaScript and CSS can be found [here](https://github.com/littlemousey/petmice-subreddit)
 
 ## 🎨 Themes
 
