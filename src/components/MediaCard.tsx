@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ViewType } from "../types/reddit";
 
 interface MediaCardProps {
@@ -8,6 +9,7 @@ interface MediaCardProps {
   filter: ViewType;
   upVotes: string;
   onError: () => void;
+  allMediaUrls?: Array<{ url: string; type: "image" | "video" }>; // New prop for multiple media
 }
 
 export default function MediaCard({
@@ -18,8 +20,30 @@ export default function MediaCard({
   filter,
   upVotes,
   onError,
+  allMediaUrls,
 }: MediaCardProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const isRainbowBridge = filter === "rainbow";
+  const hasMultipleMedia = allMediaUrls && allMediaUrls.length > 1;
+
+  const currentMedia = hasMultipleMedia
+    ? allMediaUrls[currentIndex]
+    : { url: mediaUrl, type: mediaType };
+
+  const goToPrevious = () => {
+    if (!hasMultipleMedia) return;
+    setCurrentIndex((prev) =>
+      prev === 0 ? allMediaUrls.length - 1 : prev - 1
+    );
+  };
+
+  const goToNext = () => {
+    if (!hasMultipleMedia) return;
+    setCurrentIndex((prev) =>
+      prev === allMediaUrls.length - 1 ? 0 : prev + 1
+    );
+  };
+
   return (
     <figure
       title={title}
@@ -30,7 +54,7 @@ export default function MediaCard({
               border: "2px solid #444",
               position: "relative",
             }
-          : {}
+          : { position: "relative" }
       }
     >
       {ranking && <div className="ranking-badge">#{ranking}</div>}
@@ -52,10 +76,31 @@ export default function MediaCard({
           🕯️
         </div>
       )}
-      {mediaType === "video" ? (
-        <video src={mediaUrl} controls muted loop preload="metadata" />
+      {currentMedia.type === "video" ? (
+        <video src={currentMedia.url} controls muted loop preload="metadata" />
       ) : (
-        <img src={mediaUrl} alt={title} onError={onError} />
+        <img src={currentMedia.url} alt={title} onError={onError} />
+      )}
+      {hasMultipleMedia && (
+        <>
+          <button
+            onClick={goToPrevious}
+            className="media-nav-button media-nav-prev"
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+          <button
+            onClick={goToNext}
+            className="media-nav-button media-nav-next"
+            aria-label="Next image"
+          >
+            ›
+          </button>
+          <div className="media-indicator">
+            {currentIndex + 1} / {allMediaUrls.length}
+          </div>
+        </>
       )}
       <figcaption style={isRainbowBridge ? { color: "#fff" } : {}}>
         {title}

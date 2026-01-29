@@ -18,13 +18,17 @@ export default function GalleryGrid({
   return (
     <div className="mouse-grid">
       {postsWithMedia.map((post, index) => {
-        const { mediaUrl, mediaType, upvotes } = getMediaInfo(post);
+        const { allMediaUrls, mediaUrl, mediaType, upvotes } =
+          getMediaInfo(post);
+
+        if (!mediaUrl) return null;
 
         return (
           <MediaCard
             key={post.id}
-            mediaUrl={mediaUrl!}
+            mediaUrl={mediaUrl}
             mediaType={mediaType}
+            allMediaUrls={allMediaUrls}
             title={post.title}
             ranking={showRanking ? index + 1 : undefined}
             filter={filter}
