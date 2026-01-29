@@ -1,18 +1,16 @@
-import type { RedditPost } from "../types/reddit";
+import type { RedditPost, ViewType } from "../types/reddit";
 import MediaCard from "./MediaCard";
 import { getMediaInfo } from "../utils/reddit";
 
 interface GalleryGridProps {
   posts: RedditPost[];
   showRanking?: boolean;
-  isRainbowBridge?: boolean;
-  filter: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media";
+  filter: ViewType;
 }
 
 export default function GalleryGrid({
   posts,
   showRanking = false,
-  isRainbowBridge = false,
   filter,
 }: GalleryGridProps) {
   const postsWithMedia = posts.filter((post) => getMediaInfo(post).mediaUrl);
@@ -21,7 +19,6 @@ export default function GalleryGrid({
     <div className="mouse-grid">
       {postsWithMedia.map((post, index) => {
         const { mediaUrl, mediaType, upvotes } = getMediaInfo(post);
-        console.log(post);
 
         return (
           <MediaCard
@@ -30,7 +27,6 @@ export default function GalleryGrid({
             mediaType={mediaType}
             title={post.title}
             ranking={showRanking ? index + 1 : undefined}
-            isRainbowBridge={isRainbowBridge}
             filter={filter}
             upVotes={upvotes}
             onError={() => {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./index.css";
-import ThemeSwitcher from "./components/ThemeSwitcher";
+import ThemeSwitcher, { type Theme } from "./components/ThemeSwitcher";
 import ViewToggle from "./components/ViewToggle";
 import LoadingView from "./components/LoadingView";
 import ErrorView from "./components/ErrorView";
@@ -9,12 +9,11 @@ import { useRedditPosts } from "./hooks/useRedditPosts";
 import Snowfall from "./components/Snowfall";
 import Footer from "./components/Footer";
 import christmasMusic from "./assets/christmas-is-christmas-loop.mp3";
+import type { ViewType } from "./types/reddit";
 
 function App() {
-  const [theme, setTheme] = useState("default");
-  const [view, setView] = useState<
-    "week" | "all" | "rainbow" | "hot" | "cute-mouse-media"
-  >("week");
+  const [theme, setTheme] = useState<Theme>("default");
+  const [view, setView] = useState<ViewType>("week");
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -23,23 +22,27 @@ function App() {
     view
   );
 
+  const isRainbowView = view === "rainbow";
+  const isChristmasTheme = theme === "christmas";
+  const showChristmasElements = isChristmasTheme && !isRainbowView;
+
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "default";
+    const savedTheme = (localStorage.getItem("theme") || "default") as Theme;
     setTheme(savedTheme);
     document.body.setAttribute("data-theme", savedTheme);
   }, []);
 
   useEffect(() => {
     // Override theme when in rainbow bridge view
-    if (view === "rainbow") {
+    if (isRainbowView) {
       document.body.setAttribute("data-theme", "rainbow-bridge");
     } else {
-      const savedTheme = localStorage.getItem("theme") || "default";
+      const savedTheme = (localStorage.getItem("theme") || "default") as Theme;
       document.body.setAttribute("data-theme", savedTheme);
     }
-  }, [view]);
+  }, [view, isRainbowView]);
 
-  const handleThemeChange = (newTheme: string) => {
+  const handleThemeChange = (newTheme: Theme) => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.body.setAttribute("data-theme", newTheme);
@@ -72,8 +75,8 @@ function App() {
 
   return (
     <>
-      {theme === "christmas" && view !== "rainbow" && <Snowfall />}
-      {theme === "christmas" && view !== "rainbow" && (
+      {showChristmasElements && <Snowfall />}
+      {showChristmasElements && (
         <>
           <audio ref={audioRef} loop>
             <source src={christmasMusic} type="audio/mpeg" />
@@ -99,7 +102,7 @@ function App() {
           </button>
         </>
       )}
-      {view !== "rainbow" && (
+      {!isRainbowView && (
         <ThemeSwitcher theme={theme} onThemeChange={handleThemeChange} />
       )}
 
@@ -107,12 +110,7 @@ function App() {
 
       <ViewToggle currentView={view} onViewChange={setView} />
 
-      <GalleryGrid
-        posts={posts}
-        showRanking={view === "all"}
-        isRainbowBridge={view === "rainbow"}
-        filter={view}
-      />
+      <GalleryGrid posts={posts} showRanking={view === "all"} filter={view} />
 
       {hasMore && view !== "all" && (
         <div style={{ textAlign: "center", margin: "40px 0" }}>
@@ -121,18 +119,17 @@ function App() {
             style={{
               padding: "12px 24px",
               fontSize: "16px",
-              background:
-                view === "rainbow"
-                  ? "rgba(255, 255, 255, 0.2)"
-                  : "rgba(255, 255, 255, 0.9)",
+              background: isRainbowView
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(255, 255, 255, 0.9)",
               border: "2px solid white",
               borderRadius: "8px",
               cursor: "pointer",
               fontWeight: "bold",
-              color: view === "rainbow" ? "white" : "inherit",
+              color: isRainbowView ? "white" : "inherit",
             }}
           >
-            {view === "rainbow" ? "Load More 🕯️" : "Load More Mice 🐭"}
+            {isRainbowView ? "Load More 🕯️" : "Load More Mice 🐭"}
           </button>
         </div>
       )}

@@ -1,3 +1,5 @@
+export type ViewType = "week" | "all" | "rainbow" | "hot" | "cute-mouse-media";
+
 export interface RedditPost {
   id: string;
   title: string;

@@ -1,10 +1,11 @@
+import type { ViewType } from "../types/reddit";
+
 interface MediaCardProps {
   mediaUrl: string;
   mediaType: "image" | "video";
   title: string;
   ranking?: number;
-  isRainbowBridge?: boolean;
-  filter: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media";
+  filter: ViewType;
   upVotes: string;
   onError: () => void;
 }
@@ -14,11 +15,11 @@ export default function MediaCard({
   mediaType,
   title,
   ranking,
-  isRainbowBridge = false,
-  filter = "week",
+  filter,
   upVotes,
   onError,
 }: MediaCardProps) {
+  const isRainbowBridge = filter === "rainbow";
   return (
     <figure
       title={title}

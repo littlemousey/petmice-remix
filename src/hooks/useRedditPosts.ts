@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import type { RedditPost } from "../types/reddit";
+import type { RedditPost, ViewType } from "../types/reddit";
 
 interface UseRedditPostsResult {
   posts: RedditPost[];
@@ -11,7 +11,7 @@ interface UseRedditPostsResult {
 
 export function useRedditPosts(
   subreddit: string = "PetMice",
-  timeFilter: "week" | "all" | "rainbow" | "hot" | "cute-mouse-media" = "week"
+  timeFilter: ViewType = "week"
 ): UseRedditPostsResult {
   const [posts, setPosts] = useState<RedditPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,53 +19,65 @@ export function useRedditPosts(
   const [after, setAfter] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
 
+  const buildRedditUrl = useCallback(
+    (afterParam: string | null): string => {
+      const baseParams = new URLSearchParams({ raw_json: "1" });
+      if (afterParam) baseParams.set("after", afterParam);
+
+      let endpoint: string;
+
+      switch (timeFilter) {
+        case "rainbow":
+          baseParams.set("q", 'flair:"Rainbow Bridge"');
+          baseParams.set("restrict_sr", "1");
+          baseParams.set("sort", "new");
+          baseParams.set("limit", "100");
+          endpoint = `https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`;
+          break;
+
+        case "cute-mouse-media":
+          baseParams.set("q", 'flair:"Cute Mouse Media"');
+          baseParams.set("restrict_sr", "1");
+          baseParams.set("sort", "new");
+          baseParams.set("limit", "100");
+          endpoint = `https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`;
+          break;
+
+        case "hot":
+          baseParams.set("limit", "100");
+          endpoint = `https://www.reddit.com/r/${subreddit}/hot.json?${baseParams}`;
+          break;
+
+        case "week":
+          baseParams.set("limit", "100");
+          endpoint = `https://www.reddit.com/r/${subreddit}/new.json?${baseParams}`;
+          break;
+
+        case "all":
+          baseParams.set("limit", "25");
+          baseParams.set("t", timeFilter);
+          endpoint = `https://www.reddit.com/r/${subreddit}/top.json?${baseParams}`;
+          break;
+
+        default:
+          baseParams.set("limit", "100");
+          endpoint = `https://www.reddit.com/r/${subreddit}/new.json?${baseParams}`;
+      }
+
+      return `https://corsproxy.io/?${encodeURIComponent(endpoint)}`;
+    },
+    [subreddit, timeFilter]
+  );
+
   const fetchPosts = useCallback(
     async (afterParam: string | null = null) => {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        // Build URL based on view type
-        const buildUrl = (): string => {
-          const baseParams = new URLSearchParams({ raw_json: "1" });
-
-          if (timeFilter === "rainbow") {
-            // Use search API with flair filter
-            baseParams.set("q", 'flair:"Rainbow Bridge"');
-            baseParams.set("restrict_sr", "1");
-            baseParams.set("sort", "new");
-            baseParams.set("limit", "100");
-            if (afterParam) baseParams.set("after", afterParam);
-            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`)}`;
-          } else if (timeFilter === "cute-mouse-media") {
-            // Use search API with Cute Mouse Media flair filter
-            baseParams.set("q", 'flair:"Cute Mouse Media"');
-            baseParams.set("restrict_sr", "1");
-            baseParams.set("sort", "new");
-            baseParams.set("limit", "100");
-            if (afterParam) baseParams.set("after", afterParam);
-            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/search.json?${baseParams}`)}`;
-          } else if (timeFilter === "hot") {
-            // Use hot posts API
-            baseParams.set("limit", "100");
-            if (afterParam) baseParams.set("after", afterParam);
-            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/hot.json?${baseParams}`)}`;
-          }
-          if (timeFilter === "week") {
-            baseParams.set("limit", "100");
-            // Use /new.json to get latest posts
-            if (afterParam) baseParams.set("after", afterParam);
-            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/new.json?${baseParams}`)}`;
-          } else {
-            // timeFilter === "all" - get top 25 posts
-            baseParams.set("limit", "25");
-            baseParams.set("t", timeFilter);
-            if (afterParam) baseParams.set("after", afterParam);
-            return `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}/top.json?${baseParams}`)}`;
-          }
-        };
-
-        const response = await fetch(buildUrl(), { signal: controller.signal });
+        const response = await fetch(buildRedditUrl(afterParam), {
+          signal: controller.signal,
+        });
         clearTimeout(timeoutId);
 
         if (!response.ok) {
@@ -104,7 +116,7 @@ export function useRedditPosts(
         setLoading(false);
       }
     },
-    [subreddit, timeFilter]
+    [buildRedditUrl]
   );
 
   useEffect(() => {

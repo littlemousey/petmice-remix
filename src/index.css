@@ -227,10 +227,11 @@ figcaption {
 }
 
 .upvotes-tag {
-  padding: 5px 10px;
   background-color: lightblue;
-  color: white;
   border-radius: 5px;
+  color: white;
+  padding: 5px 10px 0;
+  margin-top: 10px;
 }
 
 /* Christmas theme for cards */
