@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { ViewType } from "../types/reddit";
 
 interface ViewToggleProps {
@@ -19,45 +20,65 @@ const viewOptions: ViewOption[] = [
   { value: "cute-mouse-media", label: "Cute Mouse Media", icon: "🐭" },
 ];
 
+// Detect if browser is Chrome (supports custom select styling)
+const isChrome = () => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  return userAgent.includes("chrome") && !userAgent.includes("edg");
+};
+
 export default function ViewToggle({
   currentView,
   onViewChange,
 }: ViewToggleProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  const [useCustomSelect, setUseCustomSelect] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    setUseCustomSelect(isChrome());
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Mobile dropdown view
+  if (isMobile) {
+    return (
+      <div className="view-toggle-container">
+        <div className="view-select-wrapper">
+          <select
+            value={currentView}
+            onChange={(e) => onViewChange(e.target.value as ViewType)}
+            className={`view-select ${
+              useCustomSelect ? "view-select-chrome" : "view-select-standard"
+            }`}
+          >
+            {viewOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.icon} {option.label}
+              </option>
+            ))}
+          </select>
+          {!useCustomSelect && <span className="view-select-arrow">▼</span>}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop button view
   return (
-    <div
-      style={{
-        textAlign: "center",
-        margin: "20px 0",
-      }}
-    >
-      <div
-        style={{
-          display: "inline-flex",
-          background: "rgba(255, 255, 255, 0.9)",
-          borderRadius: "8px",
-          padding: "4px",
-          marginBottom: "20px",
-          gap: "4px",
-        }}
-      >
+    <div className="view-toggle-container">
+      <div className="view-toggle-buttons">
         {viewOptions.map((option) => {
           const isActive = currentView === option.value;
           return (
             <button
               key={option.value}
               onClick={() => onViewChange(option.value)}
-              style={{
-                padding: "8px 20px",
-                fontSize: "16px",
-                background: isActive
-                  ? "rgba(100, 100, 100, 0.2)"
-                  : "transparent",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontWeight: isActive ? "bold" : "normal",
-                transition: "all 0.2s",
-              }}
+              className={`view-button ${isActive ? "view-button-active" : ""}`}
             >
               {option.icon} {option.label}
             </button>
