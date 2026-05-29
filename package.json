@@ -1,7 +1,7 @@
 {
   "name": "petmice-remix",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,html}\""
   },
   "dependencies": {
+    "@remix-run/node": "^2.17.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

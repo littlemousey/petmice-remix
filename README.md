@@ -2,7 +2,22 @@
 
 A gallery displaying the lovely mice from the `r/PetMice` subreddit.
 You can find the deployed version on Github [here](https://littlemousey.github.io/petmice-remix/)
-The original/initial version built with basic HTML, JavaScript and CSS can be found [here](https://github.com/littlemousey/petmice-subreddit)
+In case there are CORS problems with Reddit, you can always run the app locally. You can find instructions below.
+If you don't want to install Node and NPM on your computer, the original/initial version built with basic HTML, JavaScript and CSS can be found [here](https://github.com/littlemousey/petmice-subreddit)
+Of course you are free to alter/change the code to your liking.
+
+## How to install the app locally
+
+I would recommend installing the latest NodeJS version [here](https://nodejs.org/en/download).
+Download the files with [Git](https://git-scm.com/install/) from Github
+Open the folder `petmice-remix` and launch a terminal. Run the following commands:
+
+- `npm install`
+- `npm run dev`
+
+You should see in the terminal which port is used for the app. You can copy paste that location to your browser url. For example: `http://localhost:5173/petmice-remix/`
+
+When you want to terminate the app, just press the buttons `ctrl` and `c`
 
 ## 🎨 Themes
 
