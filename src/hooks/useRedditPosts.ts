@@ -6,8 +6,18 @@ interface UseRedditPostsResult {
   loading: boolean;
   error: string | null;
   hasMore: boolean;
+  isFallback: boolean;
   loadMore: () => void;
 }
+
+// Maps each view to its corresponding local fallback JSON file in public/data/
+const fallbackFile: Record<ViewType, string> = {
+  week: "new.json",
+  hot: "hot.json",
+  all: "top.json",
+  rainbow: "rainbow.json",
+  "cute-mouse-media": "cute-media.json",
+};
 
 export function useRedditPosts(
   subreddit: string = "PetMice",
@@ -18,6 +28,7 @@ export function useRedditPosts(
   const [error, setError] = useState<string | null>(null);
   const [after, setAfter] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [isFallback, setIsFallback] = useState(false);
 
   const buildRedditUrl = useCallback(
     (afterParam: string | null): string => {
@@ -36,7 +47,7 @@ export function useRedditPosts(
           break;
 
         case "cute-mouse-media":
-          baseParams.set("q", 'flair:"Cute Mouse Media"');
+          baseParams.set("q", 'flair_name:"Cute Mouse Media"');
           baseParams.set("restrict_sr", "1");
           baseParams.set("sort", "new");
           baseParams.set("limit", "100");
@@ -64,7 +75,7 @@ export function useRedditPosts(
           endpoint = `https://www.reddit.com/r/${subreddit}/new.json?${baseParams}`;
       }
 
-      return `https://cors-anywhere.com/${endpoint}`;
+      return `${endpoint}`;
     },
     [subreddit, timeFilter]
   );
@@ -72,6 +83,7 @@ export function useRedditPosts(
   const fetchPosts = useCallback(
     async (afterParam: string | null = null) => {
       try {
+        // Abort the request if it takes longer than 15 seconds
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -98,6 +110,7 @@ export function useRedditPosts(
           (child: RedditChild) => child.data
         );
 
+        // Append on pagination, replace on fresh load
         setPosts((prev) => (afterParam ? [...prev, ...newPosts] : newPosts));
         setAfter(data.data.after);
 
@@ -112,11 +125,35 @@ export function useRedditPosts(
         setLoading(false);
       } catch (err) {
         console.error("Fetch error:", err);
-        setError(err instanceof Error ? err.message : "Failed to load posts");
+        // Only attempt fallback on the initial load (not during pagination)
+        if (!afterParam) {
+          try {
+            const fallback = await fetch(
+              `${import.meta.env.BASE_URL}data/${fallbackFile[timeFilter]}`
+            );
+            const fallbackData = await fallback.json();
+            interface RedditChild {
+              data: RedditPost;
+              kind: string;
+            }
+            const fallbackPosts: RedditPost[] = fallbackData.data.children.map(
+              (child: RedditChild) => child.data
+            );
+            setPosts(fallbackPosts);
+            setHasMore(false);
+            setIsFallback(true);
+          } catch {
+            setError(
+              err instanceof Error ? err.message : "Failed to load posts"
+            );
+          }
+        } else {
+          setError(err instanceof Error ? err.message : "Failed to load posts");
+        }
         setLoading(false);
       }
     },
-    [buildRedditUrl]
+    [buildRedditUrl, timeFilter]
   );
 
   useEffect(() => {
@@ -126,6 +163,7 @@ export function useRedditPosts(
     setError(null);
     setAfter(null);
     setHasMore(true);
+    setIsFallback(false);
     fetchPosts();
   }, [fetchPosts]);
 
@@ -135,5 +173,5 @@ export function useRedditPosts(
     }
   };
 
-  return { posts, loading, error, hasMore, loadMore };
+  return { posts, loading, error, hasMore, isFallback, loadMore };
 }

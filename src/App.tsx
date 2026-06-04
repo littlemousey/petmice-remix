@@ -17,10 +17,8 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const { posts, loading, error, hasMore, loadMore } = useRedditPosts(
-    "PetMice",
-    view
-  );
+  const { posts, loading, error, hasMore, isFallback, loadMore } =
+    useRedditPosts("PetMice", view);
 
   const isRainbowView = view === "rainbow";
   const isChristmasTheme = theme === "christmas";
@@ -107,6 +105,20 @@ function App() {
       )}
 
       <h1>🐁 Gallery of Cute Mice 🐁</h1>
+
+      {isFallback && (
+        <p
+          style={{
+            textAlign: "center",
+            opacity: 0.6,
+            fontSize: "0.85rem",
+            margin: "-8px 0 16px",
+          }}
+        >
+          Showing older data from the Petmice subreddit — Reddit API is
+          currently unavailable.
+        </p>
+      )}
 
       <ViewToggle currentView={view} onViewChange={setView} />
 
