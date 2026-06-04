@@ -92,6 +92,17 @@ body[data-theme="starry"]::before {
   }
 }
 
+/* Blue Sky theme */
+body[data-theme="sky"] {
+  background: linear-gradient(
+    180deg,
+    #4db6e8 0%,
+    #74c9f0 35%,
+    #a8ddf5 70%,
+    #d4eefc 100%
+  );
+}
+
 /* Rainbow Bridge memorial theme */
 body[data-theme="rainbow-bridge"] {
   background: #000000;
