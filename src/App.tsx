@@ -8,6 +8,7 @@ import GalleryGrid from "./components/GalleryGrid";
 import { useRedditPosts } from "./hooks/useRedditPosts";
 import Snowfall from "./components/Snowfall";
 import Clouds from "./components/Clouds";
+import Hearts from "./components/Hearts";
 import Footer from "./components/Footer";
 import christmasMusic from "./assets/christmas-is-christmas-loop.mp3";
 import type { ViewType } from "./types/reddit";
@@ -24,6 +25,7 @@ function App() {
   const isRainbowView = view === "rainbow";
   const isChristmasTheme = theme === "christmas";
   const isSkyTheme = theme === "sky";
+  const isHeartsTheme = theme === "hearts";
   const showChristmasElements = isChristmasTheme && !isRainbowView;
 
   useEffect(() => {
@@ -76,6 +78,7 @@ function App() {
   return (
     <>
       {isSkyTheme && !isRainbowView && <Clouds />}
+      {isHeartsTheme && !isRainbowView && <Hearts />}
       {showChristmasElements && <Snowfall />}
       {showChristmasElements && (
         <>

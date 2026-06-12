@@ -1,4 +1,4 @@
-export type Theme = "default" | "christmas" | "starry" | "sky";
+export type Theme = "default" | "christmas" | "starry" | "sky" | "hearts";
 
 interface ThemeSwitcherProps {
   theme: Theme;
@@ -20,6 +20,7 @@ export default function ThemeSwitcher({
         <option value="christmas">🎄 Christmas Theme</option>
         <option value="starry">⭐ Starry Night Theme</option>
         <option value="sky">☁️ Blue Sky Theme</option>
+        <option value="hearts">💕 Hearts Theme</option>
       </select>
     </div>
   );
