@@ -1,71 +1,31 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import "./index.css";
-import ThemeSwitcher, { type Theme } from "./components/ThemeSwitcher";
+import ThemeSwitcher from "./components/ThemeSwitcher";
 import ViewToggle from "./components/ViewToggle";
-import LoadingView from "./components/LoadingView";
-import ErrorView from "./components/ErrorView";
+import LoadingView from "./views/LoadingView";
+import ErrorView from "./views/ErrorView";
 import GalleryGrid from "./components/GalleryGrid";
 import { useRedditPosts } from "./hooks/useRedditPosts";
-import Snowfall from "./components/Snowfall";
-import Clouds from "./components/Clouds";
-import Hearts from "./components/Hearts";
+import { useTheme } from "./hooks/useTheme";
+import Snowfall from "./components/background/Snowfall";
+import Clouds from "./components/background/Clouds";
+import Hearts from "./components/background/Hearts";
+import ChristmasMusic from "./components/background/ChristmasMusic";
 import Footer from "./components/Footer";
-import christmasMusic from "./assets/christmas-is-christmas-loop.mp3";
 import type { ViewType } from "./types/reddit";
 
 function App() {
-  const [theme, setTheme] = useState<Theme>("default");
   const [view, setView] = useState<ViewType>("week");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
+  const isRainbowView = view === "rainbow";
+  const { theme, handleThemeChange } = useTheme(isRainbowView);
   const { posts, loading, error, hasMore, isFallback, loadMore } =
     useRedditPosts("PetMice", view);
 
-  const isRainbowView = view === "rainbow";
   const isChristmasTheme = theme === "christmas";
   const isSkyTheme = theme === "sky";
   const isHeartsTheme = theme === "hearts";
   const showChristmasElements = isChristmasTheme && !isRainbowView;
-
-  useEffect(() => {
-    const savedTheme = (localStorage.getItem("theme") || "default") as Theme;
-    setTheme(savedTheme);
-    document.body.setAttribute("data-theme", savedTheme);
-  }, []);
-
-  useEffect(() => {
-    // Override theme when in rainbow bridge view
-    if (isRainbowView) {
-      document.body.setAttribute("data-theme", "rainbow-bridge");
-    } else {
-      const savedTheme = (localStorage.getItem("theme") || "default") as Theme;
-      document.body.setAttribute("data-theme", savedTheme);
-    }
-  }, [view, isRainbowView]);
-
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.body.setAttribute("data-theme", newTheme);
-
-    // Stop music when switching away from Christmas theme
-    if (newTheme !== "christmas" && audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  const toggleMusic = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
 
   if (loading && posts.length === 0) {
     return <LoadingView />;
@@ -80,32 +40,7 @@ function App() {
       {isSkyTheme && !isRainbowView && <Clouds />}
       {isHeartsTheme && !isRainbowView && <Hearts />}
       {showChristmasElements && <Snowfall />}
-      {showChristmasElements && (
-        <>
-          <audio ref={audioRef} loop>
-            <source src={christmasMusic} type="audio/mpeg" />
-          </audio>
-          <button
-            onClick={toggleMusic}
-            style={{
-              position: "fixed",
-              top: "20px",
-              left: "10px",
-              padding: "12px 20px",
-              fontSize: "24px",
-              background: "rgba(255, 255, 255, 0.9)",
-              border: "2px solid #d4af37",
-              borderRadius: "50px",
-              cursor: "pointer",
-              zIndex: 1000,
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-            }}
-            title={isPlaying ? "Pause Music" : "Play Music"}
-          >
-            {isPlaying ? "🔇" : "🎵"}
-          </button>
-        </>
-      )}
+      {showChristmasElements && <ChristmasMusic />}
       {!isRainbowView && (
         <ThemeSwitcher theme={theme} onThemeChange={handleThemeChange} />
       )}
