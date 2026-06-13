@@ -21,27 +21,23 @@ When you want to terminate the app, just press the buttons `ctrl` and `c`
 
 ## 🎨 Themes
 
-### Rainbow Theme (Default)
+Five themes are available and your preference is saved in localStorage:
 
-- Vibrant rainbow gradient background
-- Polaroid-style photo frames
-- Rotated frames for dynamic look
+- 🌈 **Rainbow** (default) — vibrant rainbow gradient with rotated polaroid frames
+- 🎄 **Christmas** — deep red background with animated snowfall and gold accents
+- ⭐ **Starry Night** — dark night sky with stars
+- ☁️ **Blue Sky** — bright sky with floating clouds
+- 💕 **Hearts** — soft pastel background with hearts
 
-### Christmas Theme
+## 📥 Reddit data
 
-- Deep red background with animated snowfall
-- Gold accents and festive styling
-- Snow animation effect
+Reddit's API blocks requests from unauthenticated users, so the app falls back to bundled local data when the live fetch fails. That fallback data is **outdated** — to see fresh posts, use the **Import Data** button in the app:
 
-Theme preference is saved in localStorage.
+1. Open the Reddit JSON URL shown in the dialog while logged in to Reddit
+2. Copy the raw JSON from your browser
+3. Paste it into the dialog (or save it as a `.json` file and upload it)
 
-### Reddit API
-
-The app fetches from:
-
-```
-https://www.reddit.com/r/PetMice/top.json?limit=25&t=week&raw_json=1
-```
+The gallery will load immediately from the data you provide.
 
 ## 🙏 Credits
 
