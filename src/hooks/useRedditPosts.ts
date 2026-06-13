@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { RedditPost, ViewType } from "../types/reddit";
+import { parseRedditListing } from "../utils/parseRedditListing";
 
 interface UseRedditPostsResult {
   posts: RedditPost[];
@@ -7,7 +8,10 @@ interface UseRedditPostsResult {
   error: string | null;
   hasMore: boolean;
   isFallback: boolean;
+  isUserData: boolean;
   loadMore: () => void;
+  applyUserData: (rawJson: string) => void;
+  clearUserData: () => void;
 }
 
 // Maps each view to its corresponding local fallback JSON file in public/data/
@@ -29,6 +33,7 @@ export function useRedditPosts(
   const [after, setAfter] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isFallback, setIsFallback] = useState(false);
+  const [userPosts, setUserPosts] = useState<RedditPost[] | null>(null);
 
   const buildRedditUrl = useCallback(
     (afterParam: string | null): string => {
@@ -98,17 +103,7 @@ export function useRedditPosts(
 
         const data = await response.json();
 
-        if (!data.data?.children) {
-          throw new Error("Invalid response format");
-        }
-
-        interface RedditChild {
-          data: RedditPost;
-          kind: string;
-        }
-        const newPosts: RedditPost[] = data.data.children.map(
-          (child: RedditChild) => child.data
-        );
+        const newPosts = parseRedditListing(data);
 
         // Append on pagination, replace on fresh load
         setPosts((prev) => (afterParam ? [...prev, ...newPosts] : newPosts));
@@ -132,13 +127,7 @@ export function useRedditPosts(
               `${import.meta.env.BASE_URL}data/${fallbackFile[timeFilter]}`
             );
             const fallbackData = await fallback.json();
-            interface RedditChild {
-              data: RedditPost;
-              kind: string;
-            }
-            const fallbackPosts: RedditPost[] = fallbackData.data.children.map(
-              (child: RedditChild) => child.data
-            );
+            const fallbackPosts = parseRedditListing(fallbackData);
             setPosts(fallbackPosts);
             setHasMore(false);
             setIsFallback(true);
@@ -164,6 +153,7 @@ export function useRedditPosts(
     setAfter(null);
     setHasMore(true);
     setIsFallback(false);
+    setUserPosts(null);
     fetchPosts();
   }, [fetchPosts]);
 
@@ -173,5 +163,34 @@ export function useRedditPosts(
     }
   };
 
-  return { posts, loading, error, hasMore, isFallback, loadMore };
+  // Replace the gallery with a Reddit listing the user pasted/uploaded.
+  // Throws (with a user-friendly message) on invalid JSON or shape so the
+  // caller can surface it inline.
+  const applyUserData = (rawJson: string) => {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(rawJson);
+    } catch {
+      throw new Error("That doesn't look like valid JSON");
+    }
+    const imported = parseRedditListing(parsed);
+    setUserPosts(imported);
+    setHasMore(false);
+    setError(null);
+  };
+
+  // Drop imported data and fall back to the most recently fetched posts.
+  const clearUserData = () => setUserPosts(null);
+
+  return {
+    posts: userPosts ?? posts,
+    loading,
+    error,
+    hasMore,
+    isFallback,
+    isUserData: userPosts !== null,
+    loadMore,
+    applyUserData,
+    clearUserData,
+  };
 }

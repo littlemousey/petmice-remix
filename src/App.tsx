@@ -19,8 +19,17 @@ function App() {
 
   const isRainbowView = view === "rainbow";
   const { theme, handleThemeChange } = useTheme(isRainbowView);
-  const { posts, loading, error, hasMore, isFallback, loadMore } =
-    useRedditPosts("PetMice", view);
+  const {
+    posts,
+    loading,
+    error,
+    hasMore,
+    isFallback,
+    isUserData,
+    loadMore,
+    applyUserData,
+    clearUserData,
+  } = useRedditPosts("PetMice", view);
 
   const isChristmasTheme = theme === "christmas";
   const isSkyTheme = theme === "sky";
@@ -47,7 +56,7 @@ function App() {
 
       <h1>🐁 Gallery of Cute Mice 🐁</h1>
 
-      {isFallback && (
+      {isFallback && !isUserData && (
         <p
           style={{
             textAlign: "center",
@@ -58,6 +67,33 @@ function App() {
         >
           Showing older data from the Petmice subreddit — Reddit API is
           currently unavailable.
+        </p>
+      )}
+
+      {isUserData && (
+        <p
+          style={{
+            textAlign: "center",
+            opacity: 0.8,
+            fontSize: "0.85rem",
+            margin: "-8px 0 16px",
+          }}
+        >
+          Showing your imported data.{" "}
+          <button
+            onClick={clearUserData}
+            style={{
+              background: "none",
+              border: "none",
+              color: "inherit",
+              textDecoration: "underline",
+              cursor: "pointer",
+              fontSize: "inherit",
+              padding: 0,
+            }}
+          >
+            Clear
+          </button>
         </p>
       )}
 
@@ -87,7 +123,7 @@ function App() {
         </div>
       )}
 
-      <Footer />
+      <Footer onImportData={applyUserData} view={view} />
     </>
   );
 }

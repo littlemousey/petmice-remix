@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import Credits from "./Credits";
+import ImportDataDialog from "./ImportDataDialog";
+import type { ViewType } from "../types/reddit";
 
-export default function Footer() {
+interface FooterProps {
+  onImportData: (rawJson: string) => void;
+  view: ViewType;
+}
+
+export default function Footer({ onImportData, view }: FooterProps) {
   const [showCredits, setShowCredits] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -52,6 +59,7 @@ export default function Footer() {
           <button onClick={() => setShowCredits(true)} style={buttonStyling}>
             📚 Credits
           </button>
+          <ImportDataDialog onImport={onImportData} view={view} />
         </div>
       </footer>
 
