@@ -52,4 +52,4 @@ You can use this application and the code however you want
 
 ---
 
-Made with ❤️ for mouse lovers everywhere! 🐭
+Made for mouse lovers 🐭 by little mousey ❤️
