@@ -6,6 +6,8 @@ In case there are CORS problems with Reddit, you can always run the app locally.
 If you don't want to install Node and NPM on your computer, the original/initial version built with basic HTML, JavaScript and CSS can be found [here](https://github.com/littlemousey/petmice-subreddit)
 Of course you are free to alter/change the code to your liking.
 
+<img src="screenshot.png" alt="Screenshot of the travel map" width="700">
+
 ## How to install the app locally
 
 I would recommend installing the latest NodeJS version [here](https://nodejs.org/en/download).
